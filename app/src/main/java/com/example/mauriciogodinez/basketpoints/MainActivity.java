@@ -5,19 +5,39 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private int scoreA = 0;
     private int scoreB = 0;
-    TextView sA;
-    TextView sB;
+    TextView scoreATextView;
+    TextView scoreBTextView;
+
+    public static final String SCORE_EXTRA = "score";
+    public static final int SCORE_EXTRA_TEAM_A = 0;
+    public static final int SCORE_EXTRA_TEAM_B = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sA = (TextView) findViewById(R.id.score_a_text_view);
-        sB = (TextView) findViewById(R.id.score_b_text_view);
+        scoreATextView = findViewById(R.id.score_a_text_view);
+        scoreBTextView = findViewById(R.id.score_b_text_view);
+
+        if (savedInstanceState != null){
+            if(savedInstanceState.containsKey(SCORE_EXTRA)){
+                ArrayList <Integer> updatedScore = savedInstanceState.getIntegerArrayList(SCORE_EXTRA);
+               if(updatedScore != null) {
+                   if (updatedScore.size() > 0) {
+                       scoreA = updatedScore.get(SCORE_EXTRA_TEAM_A);
+                       displayTeamA(scoreA);
+                       scoreB = updatedScore.get(SCORE_EXTRA_TEAM_B);
+                       displayTeamB(scoreB);
+                   }
+               }
+            }
+        }
     }
 
     public void addOneTeamA(View view){
@@ -58,10 +78,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayTeamA(int score){
-        sA.setText(String.valueOf(score));
+        scoreATextView.setText(String.valueOf(score));
     }
 
     private void displayTeamB(int score){
-        sB.setText(String.valueOf(score));
+        scoreBTextView.setText(String.valueOf(score));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList <Integer> scoreToBeSave = new ArrayList<>();
+
+        scoreToBeSave.add(SCORE_EXTRA_TEAM_A, scoreA);
+        scoreToBeSave.add(SCORE_EXTRA_TEAM_B, scoreB);
+
+        outState.putIntegerArrayList(SCORE_EXTRA, scoreToBeSave);
     }
 }
